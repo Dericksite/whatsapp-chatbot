@@ -16,7 +16,25 @@ app = Flask(__name__)
 
 @app.route("/", methods=["GET"])
 def home():
-    return "Welcome to the chatbot root route!"
+    headers = {
+        "Cache-Control": "no-cache",
+        "Content-Type": "text/html"
+    }
+    html = """
+    <!DOCTYPE html>
+        <html lang="en">
+            <head>
+                <title>LaundryBot</title>
+                <meta charset="UTF-8">
+                <meta name="description" content="LaundryBot Assistant for WhatsApp">
+            </head>
+            <body>
+                <h1>Webhook Active</h1>
+                <p>This domain is hosting a smart WhatsApp chatbot using OpenAI.</p>
+            </body>
+        </html>
+    """
+    return html, 200, headers
 
 @app.route("/webhook", methods=["GET", "POST"])
 def webhook():
