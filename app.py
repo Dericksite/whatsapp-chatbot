@@ -7,6 +7,7 @@ import os
 load_dotenv()
 
 openai.api_key = os.getenv("OPENAI_API_KEY")
+GUPSHUP_API = os.getenv("GUPSHUP_API")
 GUPSHUP_API_KEY = os.getenv("GUPSHUP_API_KEY")
 GUPSHUP_SOURCE = os.getenv("GUPSHUP_SOURCE")
 GUPSHUP_APP_NAME = os.getenv("GUPSHUP_APP_NAME")
@@ -19,42 +20,45 @@ def home():
 
 @app.route("/webhook", methods=["POST"])
 def webhook():
-    try:
-        data = request.get_json()
-        print('data: ', data)
-        message = data["payload"]["payload"]["text"]
-        user_phone = data["payload"]["sender"]["phone"]
+    if request.method == "GET":
+        return "Webhook is live", 200  # ✅ helps Gupshup validate
+    
+    if request.method == "POST":
+        try:
+            data = request.get_json()
+            print("Webhook received:", data)
+            message = data["payload"]["payload"]["text"]
+            user_phone = data["payload"]["sender"]["phone"]
 
-        # Send to ChatGPT
-        response = openai.ChatCompletion.create(
-            model="gpt-4",
-            messages=[
-                {"role": "system", "content": "You are a helpful assistant for a safirabusiness business."},
-                {"role": "user", "content": message}
-            ]
-        )
-        print('response: ', response)
-        reply_text = response.choices[0].message.content
+            # Send to ChatGPT
+            response = openai.chat.completions.create(
+                model="gpt-4",
+                messages=[
+                    {"role": "system", "content": "You are a helpful assistant for a safirabusiness business."},
+                    {"role": "user", "content": message}
+                ]
+            )
+            print('chatgpt response: ', response)
+            reply_text = response.choices[0].message.content
 
-        # Send reply via Gupshup
-        send_url = "https://api.gupshup.io/sm/api/v1/msg"
-        payload = {
-            "channel": "whatsapp",
-            "source": GUPSHUP_SOURCE,
-            "destination": user_phone,
-            "message": reply_text,
-            "src.name": GUPSHUP_APP_NAME
-        }
-        headers = {
-            "apikey": GUPSHUP_API_KEY,
-            "Content-Type": "application/x-www-form-urlencoded"
-        }
-        requests.post(send_url, data=payload, headers=headers)
+            # Send reply via Gupshup
+            payload = {
+                "channel": "whatsapp",
+                "source": GUPSHUP_SOURCE,
+                "destination": user_phone,
+                "message": reply_text,
+                "src.name": GUPSHUP_APP_NAME
+            }
+            headers = {
+                "apikey": GUPSHUP_API_KEY,
+                "Content-Type": "application/x-www-form-urlencoded"
+            }
+            requests.post(GUPSHUP_API, data=payload, headers=headers)
 
-        return jsonify({"status": "success"}), 200
-    except Exception as e:
-        print("Error:", e)
-        return jsonify({"error": str(e)}), 500
+            return jsonify({"status": "success"}), 200
+        except Exception as e:
+            print("Error:", e)
+            return jsonify({"error": str(e)}), 500
 
 
 @app.route("/test", methods=["GET"])
