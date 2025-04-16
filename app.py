@@ -18,10 +18,10 @@ app = Flask(__name__)
 def home():
     return "Welcome to the chatbot root route!"
 
-@app.route("/webhook", methods=["POST"])
+@app.route("/webhook", methods=["GET", "POST"])
 def webhook():
     if request.method == "GET":
-        return "Webhook is live", 200  # ✅ helps Gupshup validate
+        return "Webhook is alive", 200
     
     if request.method == "POST":
         try:
