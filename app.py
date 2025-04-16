@@ -47,6 +47,9 @@ def webhook():
         message = data["payload"]["payload"]["text"]
         user_phone = data["payload"]["sender"]["phone"]
 
+        if not message or not user_phone:
+            return jsonify({"status": "ignored", "reason": "Missing text or phone"}), 200
+
         # Send to ChatGPT
         response = openai.chat.completions.create(
             model="gpt-4",
@@ -97,4 +100,4 @@ def test():
 
 
 if __name__ == "__main__":
-    app.run(port=5555)
+    app.run(host="0.0.0.0", port=80)
