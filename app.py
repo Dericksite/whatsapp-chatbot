@@ -14,6 +14,37 @@ GUPSHUP_APP_NAME = os.getenv("GUPSHUP_APP_NAME")
 
 app = Flask(__name__)
 
+def openaiService(message):
+    try:
+        response = openai.chat.completions.create(
+            model="gpt-4",
+            messages=[
+                {"role": "system", "content": "You are a helpful assistant for a safirabusiness business."},
+                {"role": "user", "content": message}
+            ]
+        )
+        reply_text = response.choices[0].message.content
+        return { "result": reply_text }
+    except Exception as e:
+        return { "error": str(e) }
+
+
+# Send reply via Gupshup
+def send_whatsapp_reply(phone_number, message):
+    headers = {
+        "apikey": GUPSHUP_API_KEY,
+        "Content-Type": "application/x-www-form-urlencoded"
+    }
+    payload = {
+        "channel": "whatsapp",
+        "source": GUPSHUP_SOURCE,
+        "destination": phone_number,
+        "message": message,
+        "src.name": GUPSHUP_APP_NAME
+    }
+    requests.post(GUPSHUP_API, headers=headers, data=payload)
+        
+
 @app.route("/", methods=["GET"])
 def home():
     headers = {
@@ -41,51 +72,11 @@ def webhook():
     if request.method == "HEAD":
         return "", 200
     
-    # try:
-    #     data = request.get_json()
-    #     print("Webhook received:", data)
-    #     message = data["payload"]["payload"]["text"]
-    #     user_phone = data["payload"]["sender"]["phone"]
-
-    #     if not message or not user_phone:
-    #         return jsonify({"status": "ignored", "reason": "Missing text or phone"}), 200
-
-    #     # Send to ChatGPT
-    #     response = openai.chat.completions.create(
-    #         model="gpt-4",
-    #         messages=[
-    #             {"role": "system", "content": "You are a helpful assistant for a safirabusiness business."},
-    #             {"role": "user", "content": message}
-    #         ]
-    #     )
-    #     print('chatgpt response: ', response)
-    #     reply_text = response.choices[0].message.content
-
-    #     # Send reply via Gupshup
-    #     payload = {
-    #         "channel": "whatsapp",
-    #         "source": GUPSHUP_SOURCE,
-    #         "destination": user_phone,
-    #         "message": reply_text,
-    #         "src.name": GUPSHUP_APP_NAME
-    #     }
-    #     headers = {
-    #         "apikey": GUPSHUP_API_KEY,
-    #         "Content-Type": "application/x-www-form-urlencoded"
-    #     }
-    #     requests.post(GUPSHUP_API, data=payload, headers=headers)
-
-    #     return jsonify({"status": "success"}), 200
-    # except Exception as e:
-    #     print("Error:", e)
-    #     return jsonify({"error": str(e)}), 500
-
     try:
         data = request.get_json()
         print("Webhook received:", data)
 
         # Gupshup sometimes sends messages and sometimes status updates
-        # Navigate to message content
         for entry in data.get("entry", []):
             for change in entry.get("changes", []):
                 value = change.get("value", {})
@@ -102,41 +93,13 @@ def webhook():
                     print(f"value => ", value)
 
                     # Send reply via Gupshup
-                    payload = {
-                        "channel": "whatsapp",
-                        "source": GUPSHUP_SOURCE,
-                        "destination": sender,
-                        "message": text,
-                        "src.name": GUPSHUP_APP_NAME
-                    }
-                    headers = {
-                        "apikey": GUPSHUP_API_KEY,
-                        "Content-Type": "application/x-www-form-urlencoded"
-                    }
-                    requests.post(GUPSHUP_API, data=payload, headers=headers)
-                    # Reply logic can go here
+                    send_whatsapp_reply(sender, text + ": from whatsapp chatbot.")
+
         return "OK", 200
     except Exception as e:
         print("Error:", e)
         return jsonify({"error": str(e)}), 500
 
-
-@app.route("/test", methods=["GET"])
-def test():
-    try:
-        response = openai.chat.completions.create(
-            model="gpt-4",
-            messages=[
-                {"role": "system", "content": "You are a helpful assistant for a safirabusiness business."},
-                {"role": "user", "content": "I am Dmytro Markitan. I want to know about hostinger."}
-            ]
-        )
-        print('response: ', response)
-        reply_text = response.choices[0].message.content
-        return reply_text
-    except Exception as e:
-        print("Error:", e)
-        return jsonify({"error": str(e)}), 500
 
 
 if __name__ == "__main__":
