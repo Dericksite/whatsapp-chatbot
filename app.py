@@ -43,6 +43,7 @@ def send_whatsapp_reply(phone_number, message):
         "src.name": GUPSHUP_APP_NAME
     }
     response = requests.post(GUPSHUP_API, headers=headers, data=payload)
+    print('response => ', response)
     print("Sent:", response.status_code, response.text)
     print("Sending to:", phone_number)
     print("Message:", message)
