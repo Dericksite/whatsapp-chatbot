@@ -41,41 +41,62 @@ def webhook():
     if request.method == "HEAD":
         return "", 200
     
+    # try:
+    #     data = request.get_json()
+    #     print("Webhook received:", data)
+    #     message = data["payload"]["payload"]["text"]
+    #     user_phone = data["payload"]["sender"]["phone"]
+
+    #     if not message or not user_phone:
+    #         return jsonify({"status": "ignored", "reason": "Missing text or phone"}), 200
+
+    #     # Send to ChatGPT
+    #     response = openai.chat.completions.create(
+    #         model="gpt-4",
+    #         messages=[
+    #             {"role": "system", "content": "You are a helpful assistant for a safirabusiness business."},
+    #             {"role": "user", "content": message}
+    #         ]
+    #     )
+    #     print('chatgpt response: ', response)
+    #     reply_text = response.choices[0].message.content
+
+    #     # Send reply via Gupshup
+    #     payload = {
+    #         "channel": "whatsapp",
+    #         "source": GUPSHUP_SOURCE,
+    #         "destination": user_phone,
+    #         "message": reply_text,
+    #         "src.name": GUPSHUP_APP_NAME
+    #     }
+    #     headers = {
+    #         "apikey": GUPSHUP_API_KEY,
+    #         "Content-Type": "application/x-www-form-urlencoded"
+    #     }
+    #     requests.post(GUPSHUP_API, data=payload, headers=headers)
+
+    #     return jsonify({"status": "success"}), 200
+    # except Exception as e:
+    #     print("Error:", e)
+    #     return jsonify({"error": str(e)}), 500
+
     try:
         data = request.get_json()
         print("Webhook received:", data)
-        message = data["payload"]["payload"]["text"]
-        user_phone = data["payload"]["sender"]["phone"]
 
-        if not message or not user_phone:
-            return jsonify({"status": "ignored", "reason": "Missing text or phone"}), 200
+        # Gupshup sometimes sends messages and sometimes status updates
+        if "entry" in data:
+            # loop through changes
+            for change in data["entry"]:
+                for item in change.get("changes", []):
+                    value = item.get("value", {})
+                    if "messages" in item.get("field", ""):
+                        # You can extend this to handle user messages
+                        print("Message received:", value)
+                    if "statuses" in value:
+                        print("Status update received:", value["statuses"])
 
-        # Send to ChatGPT
-        response = openai.chat.completions.create(
-            model="gpt-4",
-            messages=[
-                {"role": "system", "content": "You are a helpful assistant for a safirabusiness business."},
-                {"role": "user", "content": message}
-            ]
-        )
-        print('chatgpt response: ', response)
-        reply_text = response.choices[0].message.content
-
-        # Send reply via Gupshup
-        payload = {
-            "channel": "whatsapp",
-            "source": GUPSHUP_SOURCE,
-            "destination": user_phone,
-            "message": reply_text,
-            "src.name": GUPSHUP_APP_NAME
-        }
-        headers = {
-            "apikey": GUPSHUP_API_KEY,
-            "Content-Type": "application/x-www-form-urlencoded"
-        }
-        requests.post(GUPSHUP_API, data=payload, headers=headers)
-
-        return jsonify({"status": "success"}), 200
+        return "OK", 200
     except Exception as e:
         print("Error:", e)
         return jsonify({"error": str(e)}), 500
