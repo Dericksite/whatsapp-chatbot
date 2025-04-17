@@ -100,7 +100,20 @@ def webhook():
                     print(f"Message from {sender}: {text}: ", msg)
                     print(f"contacts => ", contacts)
                     print(f"value => ", value)
-                    
+
+                    # Send reply via Gupshup
+                    payload = {
+                        "channel": "whatsapp",
+                        "source": GUPSHUP_SOURCE,
+                        "destination": sender,
+                        "message": text,
+                        "src.name": GUPSHUP_APP_NAME
+                    }
+                    headers = {
+                        "apikey": GUPSHUP_API_KEY,
+                        "Content-Type": "application/x-www-form-urlencoded"
+                    }
+                    requests.post(GUPSHUP_API, data=payload, headers=headers)
                     # Reply logic can go here
         return "OK", 200
     except Exception as e:
