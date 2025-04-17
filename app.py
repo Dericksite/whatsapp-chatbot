@@ -42,8 +42,15 @@ def send_whatsapp_reply(phone_number, message):
         "message": message,
         "src.name": GUPSHUP_APP_NAME
     }
-    requests.post(GUPSHUP_API, headers=headers, data=payload)
-        
+    response = requests.post(GUPSHUP_API, headers=headers, data=payload)
+    print("Sent:", response.status_code, response.text)
+    print("Sending to:", phone_number)
+    print("Message:", message)
+    print("Source:", GUPSHUP_SOURCE)
+    print("App name:", GUPSHUP_APP_NAME)
+    print("Headers:", headers)
+    print("Payload:", payload)
+
 
 @app.route("/", methods=["GET"])
 def home():
