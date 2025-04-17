@@ -85,17 +85,23 @@ def webhook():
         print("Webhook received:", data)
 
         # Gupshup sometimes sends messages and sometimes status updates
-        if "entry" in data:
-            # loop through changes
-            for change in data["entry"]:
-                for item in change.get("changes", []):
-                    value = item.get("value", {})
-                    if "messages" in item.get("field", ""):
-                        # You can extend this to handle user messages
-                        print("Message received:", value)
-                    if "statuses" in value:
-                        print("Status update received:", value["statuses"])
+        # Navigate to message content
+        for entry in data.get("entry", []):
+            for change in entry.get("changes", []):
+                value = change.get("value", {})
+                messages = value.get("messages", [])
+                contacts = value.get("contacts", [])
 
+                if messages:
+                    msg = messages[0]
+                    sender = msg.get("from")  # WhatsApp number
+                    text = msg.get("text", {}).get("body")
+                    
+                    print(f"Message from {sender}: {text}: ", msg)
+                    print(f"contacts => ", contacts)
+                    print(f"value => ", value)
+                    
+                    # Reply logic can go here
         return "OK", 200
     except Exception as e:
         print("Error:", e)
