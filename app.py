@@ -100,14 +100,18 @@ def webhook():
                     print(f"contacts => ", contacts)
                     print(f"value => ", value)
 
-                    # Send reply via Gupshup
-                    send_whatsapp_reply(sender, text + ": from whatsapp chatbot.")
+                    res = openaiService(text)
+
+                    if "error" in res:
+                        print("Error:", res["error"])
+                    else:
+                        print("AI Response:", res["result"])
+                        send_whatsapp_reply(sender, res["result"])
 
         return "OK", 200
     except Exception as e:
         print("Error:", e)
         return jsonify({"error": str(e)}), 500
-
 
 
 if __name__ == "__main__":
