@@ -19,7 +19,7 @@ def openaiService(message):
         response = openai.chat.completions.create(
             model="gpt-4",
             messages=[
-                {"role": "system", "content": "You are a helpful assistant for a safirabusiness business."},
+                {"role": "system", "content": "You are a friendly and professional chatbot for a local laundromat called FreshSpin. Answer customer questions about services, pricing, pickup & delivery, and machine availability. Keep your replies short, helpful, and warm."},
                 {"role": "user", "content": message}
             ]
         )
