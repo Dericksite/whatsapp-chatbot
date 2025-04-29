@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h2>Conversation History</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Message</th>
+                <th>Timestamp</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for conversation in conversations %}
+                <tr>
+                    <td>{{ conversation.id }}</td>
+                    <td>{{ conversation.message }}</td>
+                    <td>{{ conversation.timestamp }}</td>
+                    <td><a href="{{ url_for('main.conversation_detail', id=conversation.id) }}">View</a></td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

@@ -1,4 +1,11 @@
 flask
+flask-sqlalchemy
+flask-migrate
+mysqlclient
 openai
 requests
 python-dotenv
+python-dateutil
+flask-login
+flask-wtf
+email-validator

@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h2>ChatBot Setting</h2>
+    <p>Site Name: {{ setting.site_name }}</p>
+    <p>Service Description: {{ setting.service_description }}</p>
+    <p>Service Price: ${{ setting.service_price }}</p>
+    <p>Opening Time: {{ setting.opening_time }}</p>
+    <p>Closing Time: {{ setting.closing_time }}</p>
+    <p>Pickup Days: {{ setting.pickup_days }}</p>
+{% endblock %}
