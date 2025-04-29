@@ -14,23 +14,6 @@ GUPSHUP_API_KEY = os.getenv("GUPSHUP_API_KEY")
 GUPSHUP_SOURCE = os.getenv("GUPSHUP_SOURCE")
 GUPSHUP_APP_NAME = os.getenv("GUPSHUP_APP_NAME")
 
-# Function to detect if a message is about scheduling or just mentioning a date
-def detect_schedule_intent(message):
-    # Keywords that indicate scheduling
-    scheduling_keywords = ["schedule", "pickup", "delivery", "collect", "appointment", "reserve"]
-    
-    # Check if the message contains any scheduling-related keywords
-    if any(keyword in message.lower() for keyword in scheduling_keywords):
-        return True
-    return False
-
-def detect_datetime(message):
-    try:
-        # Attempt to parse the input text
-        parsed_date = parser.parse(message, fuzzy=True)
-        return parsed_date
-    except ValueError:
-        return None
 
 def openaiService(message):
     try:
@@ -229,24 +212,15 @@ def openaiService(message):
             - Não invente informações ou preços.
         """
 
-        # Check if the message contains a scheduling-related date
-        if detect_schedule_intent(message):
-            # Extract and confirm the date/time for scheduling
-            date_time = detect_datetime(message)
-            if date_time:
-                return {"result": f"Collection scheduled for {date_time.strftime('%A, %B %d, %Y at %I:%M %p')}"}
-            else:
-                return {"result": "Could you please provide a specific date and time for the collection?"}
-        else:
-            response = openai.chat.completions.create(
-                model="gpt-4",
-                messages=[
-                    {"role": "system", "content": SYSTEM_PROMPT},
-                    {"role": "user", "content": message}
-                ]
-            )
-            reply_text = response.choices[0].message.content
-            return {"result": reply_text}
+        response = openai.chat.completions.create(
+            model="gpt-4",
+            messages=[
+                {"role": "system", "content": SYSTEM_PROMPT},
+                {"role": "user", "content": message}
+            ]
+        )
+        reply_text = response.choices[0].message.content
+        return {"result": reply_text}
 
     except Exception as e:
         return { "error": str(e) }
