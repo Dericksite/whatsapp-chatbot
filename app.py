@@ -6,14 +6,20 @@ from flask_login import LoginManager
 from controllers import auth_bp, main_bp, conversation_bp, botSetting_bp
 import os
 from dotenv import load_dotenv
+from flask_migrate import Migrate
+
 
 load_dotenv()
 
 app = Flask(__name__)
 app.config.from_object(Config)
 
+
 # Initialize the database
 db.init_app(app)
+
+
+migrate = Migrate(app, db)
 
 login_manager = LoginManager()
 login_manager.init_app(app)
@@ -35,6 +41,6 @@ app.register_blueprint(botSetting_bp)
 
 PORT = os.getenv("PORT")
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=80) # server
+    # app.run(host="0.0.0.0", port=80) # server
     # app.run(port=PORT)    # localhost
-    # app.run(debug=True)
+    app.run(debug=True)
