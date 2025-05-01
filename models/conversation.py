@@ -7,7 +7,7 @@ class Conversation(db.Model):
     phone_from = db.Column(db.String(15), nullable=False)
     phone_to = db.Column(db.String(15), nullable=False)
     message = db.Column(db.Text, nullable=False)
-    timestamp = db.Column(db.DateTime, nullable=False)
+    created_at = db.Column(db.DateTime, nullable=False)
     
     # user = db.relationship('User', backref=db.backref('conversations', lazy=True))
 

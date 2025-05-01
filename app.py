@@ -11,7 +11,6 @@ load_dotenv()
 
 app = Flask(__name__)
 app.config.from_object(Config)
-app.config['SECRET_KEY'] = os.getenv("SECRET_KEY", "your_default_secret_key")
 
 # Initialize the database
 db.init_app(app)
@@ -37,4 +36,5 @@ app.register_blueprint(botSetting_bp)
 PORT = os.getenv("PORT")
 if __name__ == "__main__":
     # app.run(host="0.0.0.0", port=80) # server
-    app.run(port=PORT)    # localhost
+    # app.run(port=PORT)    # localhost
+    app.run(debug=True)

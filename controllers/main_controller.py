@@ -2,8 +2,10 @@ from flask import Blueprint, jsonify, render_template, request
 import openai
 import requests
 import os
-from dateutil import parser
 from flask_login import login_required
+from models.conversation import Conversation
+from models import db
+from datetime import datetime
 
 main_bp = Blueprint('main', __name__)
 
@@ -244,7 +246,25 @@ def send_whatsapp_reply(phone_number, message):
     print("Sent:", response.status_code, response.text)
     print("Sending to:", phone_number)
     print("Message:", message)
+    saveMessage(GUPSHUP_SOURCE, phone_number, message)
 
+
+def saveMessage(phone_from, phone_to, message):
+    if not phone_from or not phone_to or not message:
+        print("Missing required fields")
+        return 'Missing required fields'
+    
+    # Create a new conversation object
+    new_conversation = Conversation(
+        phone_from=phone_from,
+        phone_to=phone_to,
+        message=message,
+        created_at=datetime.now()  # Use the current timestamp
+    )
+
+    # Add the new conversation to the session and commit to save it in the database
+    db.session.add(new_conversation)
+    db.session.commit()
 
 
 @main_bp.route('/')
@@ -276,6 +296,8 @@ def webhook():
                     print(f"Message from {sender}: {text}: ", msg)
                     print(f"contacts => ", contacts)
                     print(f"value => ", value)
+
+                    saveMessage(sender, GUPSHUP_SOURCE, text)
 
                     res = openaiService(text)
 

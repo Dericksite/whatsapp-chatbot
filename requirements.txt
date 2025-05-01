@@ -1,11 +1,12 @@
 flask
 flask-sqlalchemy
+Flask-Bcrypt
 flask-migrate
+flask-login
+flask-wtf
 mysqlclient
 openai
 requests
 python-dotenv
 python-dateutil
-flask-login
-flask-wtf
 email-validator

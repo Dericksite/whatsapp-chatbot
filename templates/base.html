@@ -1,34 +1,60 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Lavanderia Safira</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
-<body>
-    <div class="sidebar">
-        <ul>
-            <li><a href="{{ url_for('auth.profile') }}">User</a></li>
-            <li><a href="{{ url_for('conversation.history') }}">Conversations</a></li>
-            <li><a href="{{ url_for('botSetting.bot_setting') }}">Bot Setting</a></li>
-            <li><a href="{{ url_for('auth.logout') }}">Logout</a></li>
-        </ul>
-    </div>
-    
-    <div class="content">
-        <header>
-            <h1>Lavanderia Safira</h1>
-        </header>
 
-        <main>
-            {% block content %}{% endblock %}
-        </main>
+<body class="bg-gray-100 h-screen flex flex-col">
 
-        <footer>
-            <p>&copy; 2025 Lavanderia Safira</p>
-        </footer>
+    <!-- Header Bar -->
+    <header class="bg-purple-600 text-white p-2" style="background-color: rgb(96, 92, 168)">
+        <div class="flex items-center justify-between">
+            <!-- Logo and Site Name -->
+            <div class="flex items-center">
+                <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Logo" class="h-12 mr-3">
+                <h1 class="text-xl font-semibold">Lavanderia Safira</h1>
+            </div>
+            <!-- Add any other header items here, e.g., user profile -->
+            <div class="flex items-center space-x-4">
+                <div class="text-sm">
+                    Welcome, {{ current_user.username }}!
+                </div>
+                <!-- <div>
+                    <a href="#" class="bg-gray-800 p-2 rounded-full text-white">
+                        <i class="fas fa-bell"></i>
+                    </a>
+                </div> -->
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Body (Sidebar and Content) -->
+    <div class="flex flex-1 bg-gray-100">
+
+        <!-- Sidebar -->
+        <aside class="bg-gray-800 text-white w-64 p-4" style="background-color: rgb(34 45 50);">
+            <ul class="space-y-4">
+                <li><a href="{{ url_for('auth.profile') }}" class="hover:bg-gray-700 p-2 rounded">Profile</a></li>
+                <li><a href="{{ url_for('conversation.conversation') }}" class="hover:bg-gray-700 p-2 rounded">Conversations</a></li>
+                <li><a href="{{ url_for('botSetting.bot_setting') }}" class="hover:bg-gray-700 p-2 rounded">Bot Setting</a></li>
+                <li><a href="{{ url_for('auth.logout') }}" class="hover:bg-gray-700 p-2 rounded">Logout</a></li>
+            </ul>
+        </aside>
+
+        <!-- Main Content -->
+        <div class="content flex-1 p-6 overflow-y-auto">
+            {% block content %}
+            {% endblock %}
+        </div>
+
     </div>
+
 </body>
+
 </html>

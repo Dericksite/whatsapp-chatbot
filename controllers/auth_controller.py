@@ -1,10 +1,12 @@
-from flask import Blueprint, render_template, redirect, url_for, flash
+from flask import Blueprint, render_template, request, redirect, url_for, flash
 from flask_login import login_user, logout_user
-from werkzeug.security import check_password_hash, generate_password_hash
 from models import db  # Import db here
 from models.user import User
 from forms.index import LoginForm, RegistrationForm  # Import forms here
-from flask_login import login_required
+from flask_login import login_required, current_user
+from flask_bcrypt import Bcrypt
+
+bcrypt = Bcrypt()
 
 auth_bp = Blueprint('auth', __name__)
 
@@ -18,9 +20,8 @@ def register():
         if user:
             flash('Email already exists. Please log in.', 'danger')
             return redirect(url_for('auth.login'))
-            
-        hashed_password = generate_password_hash(form.password.data, method='pbkdf2:sha256')
-        user = User(username=form.username.data, email=form.email.data, password=hashed_password)
+        
+        user = User(username=form.username.data, email=form.email.data, password=form.password.data)
         db.session.add(user)
         db.session.commit()
         flash('Registration successful! Please log in.', 'success')
@@ -33,20 +34,51 @@ def login():
     form = LoginForm()
     if form.validate_on_submit():
         user = User.query.filter_by(email=form.email.data).first()
-        if user and check_password_hash(user.password, form.password.data):
-            login_user(user)
-            flash('Login successful!', 'success')
-            return redirect(url_for('main.index'))
+        if user:
+            if user.check_password(form.password.data):
+                login_user(user)
+                flash('Login successful!', 'success')
+                return redirect(url_for('main.index'))
+            else:
+                flash('Login unsuccessful. Check email and/or password.', 'danger')
         else:
-            flash('Login unsuccessful. Check email and/or password.', 'danger')
+            flash('User not found.', 'danger')
     return render_template('login.html', form=form)
 
 
-@auth_bp.route('/profile')
+@auth_bp.route('/profile', methods=['GET', 'POST'])
 @login_required
 def profile():
-    user = User.query.first()  # Fetch the first user for now
-    return render_template('profile.html', user=user)
+    if request.method == 'POST':
+        # Get the form data
+        username = request.form['username']
+        email = request.form['email']
+        old_password = request.form['old_password']
+        new_password = request.form['new_password']
+
+        print(username, email, old_password, new_password)
+        
+        user = User.query.filter_by(email=email).first()
+        if user:
+            if user.check_password(old_password):
+                # Update the user record in the database
+                current_user.username = username
+                current_user.email = email
+
+                user.username = username
+                user.email = email
+                user.password = bcrypt.generate_password_hash(new_password).decode('utf-8')
+                db.session.commit()
+
+                flash('Successfully updated!', 'success')
+            else:
+                flash('Password is not correct!', 'danger')
+        else:
+            flash('User not found.', 'danger')
+        
+        return redirect(url_for('auth.profile'))  # Correct redirect to the same route
+
+    return render_template('profile.html', user=current_user)
 
 
 # Logout Route

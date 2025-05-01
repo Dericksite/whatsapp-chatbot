@@ -1,11 +1,64 @@
 {% extends 'base.html' %}
 
 {% block content %}
-    <h2>ChatBot Setting</h2>
-    <p>Site Name: {{ setting.site_name }}</p>
-    <p>Service Description: {{ setting.service_description }}</p>
-    <p>Service Price: ${{ setting.service_price }}</p>
-    <p>Opening Time: {{ setting.opening_time }}</p>
-    <p>Closing Time: {{ setting.closing_time }}</p>
-    <p>Pickup Days: {{ setting.pickup_days }}</p>
+    <div class="max-w-4xl mx-auto p-6 bg-white rounded-lg shadow-lg mt-6">
+        <!-- Flash Messages -->
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <div class="alert alert-warning mt-3 p-3 bg-yellow-200 text-yellow-800 rounded-md">
+                    {% for message in messages %}
+                        <p>{{ message }}</p>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+
+        <form method="POST" action="{{ url_for('botSetting.bot_setting') }}">
+            <label for="site_name" class="block text-sm font-semibold text-gray-700">Site Name</label>
+            <input
+                type="text"
+                id="site_name"
+                name="site_name"
+                value="{{ setting.site_name }}"
+                class="w-full p-3 border border-gray-300 rounded-lg"
+                required
+            >
+
+            <label for="service_description" class="block text-sm font-semibold text-gray-700">Service Description</label>
+            <textarea
+                id="service_description"
+                name="service_description"
+                class="w-full p-3 border border-gray-300 rounded-lg h-48"
+                required
+            >{{ setting.service_description }}</textarea>
+
+            <label for="service_price" class="block text-sm font-semibold text-gray-700">Service Price</label>
+            <textarea
+                id="service_price"
+                name="service_price"
+                class="w-full p-3 border border-gray-300 rounded-lg h-48"
+                required
+            >{{ setting.service_price }}</textarea>
+
+            <label for="business_time" class="block text-sm font-semibold text-gray-700">Business Time</label>
+            <textarea
+                id="business_time"
+                name="business_time"
+                class="w-full p-3 border border-gray-300 rounded-lg h-48"
+                required
+            >{{ setting.business_time }}</textarea>
+
+            <label for="pickup_days" class="block text-sm font-semibold text-gray-700">Pickup Days</label>
+            <textarea
+                id="delivery"
+                name="delivery"
+                class="w-full p-3 border border-gray-300 rounded-lg h-48"
+                required
+            >{{ setting.delivery }}</textarea>
+
+            <div class="flex items-center justify-between mt-6">
+                <button type="submit" class="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700">Save Changes</button>
+            </div>
+        </form>
+    </div>
 {% endblock %}
