@@ -44,7 +44,7 @@ def openaiService(message):
 
             Instruções Adicionais:
             - Responda apenas com base nas informações fornecidas acima.
-            - Se a pergunta for sobre um serviço ou item não listado (por exemplo, "lavagem de cortinas"), informe que você não tem informações sobre esse serviço específico e sugira entrar em contato pelo telefone 11 93774-4626 para verificar a disponibilidade.
+            - Se a pergunta for sobre um serviço ou item não listado (por exemplo, "lavagem de cortinas"), informe que você não tem informações sobre esse serviço específico e sugira entrar em contato pelo telefone 11 93774-4626 para verificar a disponibilidade. Também, Nestes casos, recomende entrar em contato diretamente pelo WhatsApp neste link: https://wa.me/message/L4TBXL2ZK3T7I1.
             - Se perguntarem sobre a área de entrega, mencione as áreas cobertas e a taxa, e sempre peça o CEP para confirmação.
             - Mantenha as respostas claras e objetivas.
             - Não invente informações ou preços.

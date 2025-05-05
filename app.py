@@ -41,6 +41,6 @@ app.register_blueprint(botSetting_bp)
 
 PORT = os.getenv("PORT")
 if __name__ == "__main__":
-    # app.run(host="0.0.0.0", port=80) # server
+    app.run(host="0.0.0.0", port=80) # server
     # app.run(port=PORT)    # localhost
-    app.run(debug=True)
+    # app.run(debug=True)
