@@ -108,6 +108,9 @@ def saveMessage(phone_from, phone_to, message):
 def index():
     return render_template('index.html')
 
+
+processed_message_ids = set()
+
 @main_bp.route("/webhook", methods=["POST", "HEAD"])
 def webhook():
     if request.method == "HEAD":
@@ -126,6 +129,19 @@ def webhook():
 
                 if messages:
                     msg = messages[0]
+                    message_id = msg.get("id")
+
+                    # Skip if already processed
+                    if message_id in processed_message_ids:
+                        print(f"Skipping duplicate message ID: {message_id}")
+                        continue
+
+                    if msg.get("type") != "text" or not text:
+                        print(f"Ignoring non-text message: {msg}")
+                        continue
+
+                    processed_message_ids.add(message_id)
+
                     sender = msg.get("from")  # WhatsApp number
                     text = msg.get("text", {}).get("body")
                     
