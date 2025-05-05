@@ -22,8 +22,6 @@ def openaiService(message):
     try:
         setting = BotSetting.query.first()  # Fetch the first settings
 
-        print("service_price => ", setting.service_price)
-
         SYSTEM_PROMPT = f"""
             Você é um assistente virtual da {setting.site_name}. Seu objetivo é responder às perguntas dos clientes sobre nossos serviços, preços, horário de funcionamento, endereço, delivery e outras informações relevantes sobre a lavanderia. Use SOMENTE as informações fornecidas abaixo para basear suas respostas. Seja cordial, prestativo e responda em português brasileiro.
 
@@ -51,8 +49,6 @@ def openaiService(message):
             - Mantenha as respostas claras e objetivas.
             - Não invente informações ou preços.
         """
-
-        print("SYSTEM_PROMPT => ", SYSTEM_PROMPT)
 
         response = openai.chat.completions.create(
             model="gpt-4",
