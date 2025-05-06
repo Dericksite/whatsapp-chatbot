@@ -136,10 +136,6 @@ def webhook():
                         print(f"Skipping duplicate message ID: {message_id}")
                         continue
 
-                    if msg.get("type") != "text" or not text:
-                        print(f"Ignoring non-text message: {msg}")
-                        continue
-
                     processed_message_ids.add(message_id)
 
                     sender = msg.get("from")  # WhatsApp number
